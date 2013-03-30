@@ -1,0 +1,16 @@
+{
+    "name": "staffim/rollbar-bundle",
+    "description": "Bundle for Symfony2 that reporting errors to Rollbar",
+    "keywords": ["rollbar"],
+    "license": "MIT",
+    "type": "bundle",
+    "authors": [{"name": "Vyacheslav Salakhutdinov", "email": "megazoll@gmail.com"}],
+    "require": {
+        "ext-curl": "*",
+        "rollbar/rollbar": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {"Staffim\\RollbarBundle\\": ""}
+    },
+    "target-dir" : "Staffim/RollbarBundle"
+}
