@@ -118,7 +118,7 @@ class RollbarListener
      */
     public function handleError($level, $message, $file, $line, $context)
     {
-        if ($this->errorLevel & $level) {
+        if (error_reporting() & $level && $this->errorLevel & $level) {
             $this->rollbarNotifier->report_php_error($level, $message, $file, $line);
         }
 
