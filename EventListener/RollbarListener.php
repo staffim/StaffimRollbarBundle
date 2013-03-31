@@ -41,17 +41,27 @@ class RollbarListener
      * @param int $errorLevel
      */
     public function __construct(SecurityContextInterface $securityContext, $accessToken, $environment, $errorLevel = null) {
-        $this->rollbarNotifier = new \RollbarNotifier([
+        $this->rollbarNotifier = new \RollbarNotifier(array(
             'access_token' => $accessToken,
             'environment'  => $environment,
             'host'         => php_uname('n'),
             'max_errno'    => -1,
-            'person_fn'    => [$this, 'getUserData']
-        ]);
+            'person_fn'    => array($this, 'getUserData')
+        ));
 
         $this->securityContext = $securityContext;
         $this->setErrorLevel($errorLevel);
-        register_shutdown_function([$this, 'flush']);
+        register_shutdown_function(array($this, 'flush'));
+    }
+
+    /**
+     * Return RollbarNotifier instance.
+     *
+     * @return \RollbarNotifier
+     */
+    public function getRollbarNotifier()
+    {
+        return $this->rollbarNotifier;
     }
 
     /**
@@ -71,7 +81,7 @@ class RollbarListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        set_error_handler([$this, 'handleError']);
+        set_error_handler(array($this, 'handleError'));
     }
 
     /**

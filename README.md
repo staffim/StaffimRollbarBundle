@@ -6,8 +6,6 @@ Intergrates [Rollbar](http://rollbar.com/) with your Symfony2 application.
 
 The bundle is inspired from [ratchetio-bundle](https://github.com/ecoleman/ratchetio-bundle)
 
-Note: this bundle require php 5.4
-
 ## Installation
 
 Require the `staffim/rollbar-bundle` package in your composer.json and update your dependencies.
