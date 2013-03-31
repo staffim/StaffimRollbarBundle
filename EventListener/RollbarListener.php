@@ -7,6 +7,9 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
+/**
+ * @author Vyacheslav Salakhutdinov <megazoll@gmail.com>
+ */
 class RollbarListener
 {
     /**
@@ -29,6 +32,14 @@ class RollbarListener
      */
     private $exception;
 
+    /**
+     * Constructor.
+     *
+     * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
+     * @param string $accessToken
+     * @param string $environment
+     * @param int $errorLevel
+     */
     public function __construct(SecurityContextInterface $securityContext, $accessToken, $environment, $errorLevel = null) {
         $this->rollbarNotifier = new \RollbarNotifier([
             'access_token' => $accessToken,
@@ -43,16 +54,31 @@ class RollbarListener
         register_shutdown_function([$this, 'flush']);
     }
 
+    /**
+     * Set error level.
+     *
+     * @param type $errorLevel
+     */
     public function setErrorLevel($errorLevel)
     {
         $this->errorLevel = is_null($errorLevel) ? error_reporting() : $errorLevel;
     }
 
+    /**
+     * Register error handler.
+     *
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         set_error_handler([$this, 'handleError']);
     }
 
+    /**
+     * Log exception.
+     *
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $event
+     */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if ($event->getException() instanceof HttpException) {
@@ -62,6 +88,11 @@ class RollbarListener
         $this->exception = $event->getException();
     }
 
+    /**
+     * Wrap exception with additional info.
+     *
+     * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $event
+     */
     public function onKernelResponse(FilterResponseEvent $event)
     {
         if ($this->exception) {
@@ -75,6 +106,16 @@ class RollbarListener
         }
     }
 
+    /**
+     * Handle php error.
+     *
+     * @param int $level
+     * @param string $message
+     * @param string $file
+     * @param int $line
+     * @param string $context
+     * @return bool
+     */
     public function handleError($level, $message, $file, $line, $context)
     {
         if ($this->errorLevel & $level) {
@@ -84,6 +125,11 @@ class RollbarListener
         return false;
     }
 
+    /**
+     * Get current user info.
+     *
+     * @return null|array
+     */
     public function getUserData()
     {
         if ($this->securityContext->getToken() && $this->securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -106,6 +152,9 @@ class RollbarListener
         return null;
     }
 
+    /**
+     * Flush errors on halt.
+     */
     public function flush()
     {
         $error = error_get_last();
