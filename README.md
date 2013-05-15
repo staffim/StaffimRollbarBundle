@@ -12,7 +12,7 @@ Require the `staffim/rollbar-bundle` package in your composer.json and update yo
 
     $ composer require staffim/rollbar-bundle:*
 
-Add the StaffimSplunkBundle to your application's kernel:
+Add the StaffimRollbarBundle to your application's kernel:
 
 ```php
     public function registerBundles()
