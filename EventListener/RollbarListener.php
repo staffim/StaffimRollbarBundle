@@ -129,7 +129,9 @@ class RollbarListener
     public function handleError($level, $message, $file, $line, $context)
     {
         if (error_reporting() & $level && $this->errorLevel & $level) {
+            $_SERVER['HTTP_REQUEST_CONTENT'] = file_get_contents('php://input');
             $this->rollbarNotifier->report_php_error($level, $message, $file, $line);
+            unset($_SERVER['HTTP_REQUEST_CONTENT']);
         }
 
         return false;
