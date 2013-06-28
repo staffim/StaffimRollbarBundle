@@ -19,10 +19,12 @@ class StaffimRollbarExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $phpLoader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $xmlLoader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
         if (isset($config['access_token'])) {
-            $loader->load('services.xml');
+            $phpLoader->load('parameters.php');
+            $xmlLoader->load('services.xml');
 
             $container->setParameter('staffim_rollbar.rollbar.access_token', $config['access_token']);
             $container->setParameter('staffim_rollbar.rollbar.error_level', $config['error_level']);

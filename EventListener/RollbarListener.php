@@ -35,22 +35,16 @@ class RollbarListener
     /**
      * Constructor.
      *
+     * @param \RollbarNotifier $rollbarNotifier
      * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
-     * @param string $accessToken
-     * @param string $environment
      * @param int $errorLevel
      */
-    public function __construct(SecurityContextInterface $securityContext, $accessToken, $environment, $errorLevel = null) {
-        $this->rollbarNotifier = new \RollbarNotifier(array(
-            'access_token' => $accessToken,
-            'environment'  => $environment,
-            'host'         => php_uname('n'),
-            'max_errno'    => -1,
-            'person_fn'    => array($this, 'getUserData')
-        ));
-
+    public function __construct(\RollbarNotifier $rollbarNotifier, SecurityContextInterface $securityContext, $errorLevel = null) {
+        $this->rollbarNotifier = $rollbarNotifier;
         $this->securityContext = $securityContext;
         $this->setErrorLevel($errorLevel);
+
+        $this->rollbarNotifier->person_fn = array($this, 'getUserData');
         register_shutdown_function(array($this, 'flush'));
     }
 
