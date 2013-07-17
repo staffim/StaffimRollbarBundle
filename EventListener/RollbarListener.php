@@ -33,6 +33,11 @@ class RollbarListener
     private $exception;
 
     /**
+     * @var \Symfony\Component\HttpFoundation\Request
+     */
+    private $request;
+
+    /**
      * Constructor.
      *
      * @param \RollbarNotifier $rollbarNotifier
@@ -75,6 +80,7 @@ class RollbarListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
+        $this->request = $event->getRequest();
         set_error_handler(array($this, 'handleError'));
     }
 
@@ -123,7 +129,9 @@ class RollbarListener
     public function handleError($level, $message, $file, $line, $context)
     {
         if (error_reporting() & $level && $this->errorLevel & $level) {
-            $_SERVER['HTTP_REQUEST_CONTENT'] = file_get_contents('php://input');
+            if ($this->request) {
+                $_SERVER['HTTP_REQUEST_CONTENT'] = $this->request->getContent();
+            }
             $this->rollbarNotifier->report_php_error($level, $message, $file, $line);
             unset($_SERVER['HTTP_REQUEST_CONTENT']);
         }
