@@ -149,6 +149,9 @@ class RollbarListener
         if ($this->securityContext->getToken() && $this->securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $userData = array();
             $user = $this->securityContext->getToken()->getUser();
+            if (!$user) {
+                return null;
+            }
             if (method_exists($user, 'getId')) {
                 $userData['id'] = $user->getId();
             } else {
