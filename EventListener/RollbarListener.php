@@ -38,6 +38,11 @@ class RollbarListener
     private $request;
 
     /**
+     * @var callable
+     */
+    private $previousErrorHandler;
+
+    /**
      * Constructor.
      *
      * @param \RollbarNotifier $rollbarNotifier
@@ -81,7 +86,7 @@ class RollbarListener
     public function onKernelRequest(GetResponseEvent $event)
     {
         $this->request = $event->getRequest();
-        set_error_handler(array($this, 'handleError'));
+        $this->previousErrorHandler = set_error_handler(array($this, 'handleError'));
     }
 
     /**
@@ -136,7 +141,11 @@ class RollbarListener
             unset($_SERVER['HTTP_REQUEST_CONTENT']);
         }
 
-        return false;
+        if ($this->previousErrorHandler) {
+            return call_user_func($this->previousErrorHandler, $level, $message, $file, $line, $context);
+        } else {
+            return false;
+        }
     }
 
     /**
