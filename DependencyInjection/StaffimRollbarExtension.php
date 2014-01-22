@@ -28,6 +28,8 @@ class StaffimRollbarExtension extends Extension
 
             $container->setParameter('staffim_rollbar.rollbar.access_token', $config['access_token']);
             $container->setParameter('staffim_rollbar.rollbar.error_level', $config['error_level']);
+            $container->setParameter('staffim_rollbar.scrub_exceptions', $config['scrub']['exceptions']);
+            $container->setParameter('staffim_rollbar.scrub_parameters', $config['scrub']['parameters']);
         }
     }
 }
