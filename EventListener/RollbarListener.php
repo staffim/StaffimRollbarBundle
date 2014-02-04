@@ -6,6 +6,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Debug\Exception\FlattenException;
 
 /**
  * @author Vyacheslav Salakhutdinov <megazoll@gmail.com>
@@ -42,17 +43,25 @@ class RollbarListener
      */
     private $previousErrorHandler;
 
+    private $scrubExceptions;
+
+    private $scrubParameters;
+
     /**
      * Constructor.
      *
      * @param \RollbarNotifier $rollbarNotifier
      * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
      * @param int $errorLevel
+     * @param array $scrubExceptions
+     * @param array $scrubParameters
      */
-    public function __construct(\RollbarNotifier $rollbarNotifier, SecurityContextInterface $securityContext, $errorLevel = null) {
+    public function __construct(\RollbarNotifier $rollbarNotifier, SecurityContextInterface $securityContext, $errorLevel = null, array $scrubExceptions = array(), array $scrubParameters = array()) {
         $this->rollbarNotifier = $rollbarNotifier;
         $this->securityContext = $securityContext;
         $this->setErrorLevel($errorLevel);
+        $this->scrubExceptions = $scrubExceptions;
+        $this->scrubParameters = $scrubParameters;
 
         $this->rollbarNotifier->person_fn = array($this, 'getUserData');
         register_shutdown_function(array($this, 'flush'));
@@ -100,7 +109,27 @@ class RollbarListener
             return;
         }
 
-        $this->exception = $event->getException();
+        $exception = $event->getException();
+
+        if (in_array(get_class($exception), $this->scrubExceptions)) {
+            /** @var FlattenException $exception */
+            $exception = FlattenException::create($exception);
+
+            $trace = $exception->getTrace();
+            foreach ($trace as $key => $item) {
+                array_walk_recursive($item['args'], function (&$value, $key, $params) {
+                    if (is_string($value) && $key = array_search($value, $params)) {
+                        $value = '%' . $key . '%';
+                    }
+                }, $this->scrubParameters);
+
+                $trace[$key] = $item;
+            }
+
+            $exception->setTrace($trace, $exception->getFile(), $exception->getLine());
+        }
+
+        $this->exception = $exception;
     }
 
     /**
