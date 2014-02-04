@@ -34,4 +34,10 @@ staffim_rollbar:
     access_token: ###
     # PHP error level (see http://php.net/manual/en/function.error-reporting.php)
     error_level: -1
+    # Values from scrub.parameters are replaced by the key for specified exceptions
+    scrub:
+        exceptions:
+            - PDOException
+        parameters:
+            key: %key%
 ```
