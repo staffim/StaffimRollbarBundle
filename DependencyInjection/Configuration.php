@@ -25,6 +25,7 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue(-1)
                 ->end()
                 ->arrayNode('scrub')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->arrayNode('exceptions')
                             ->prototype('scalar')->end()
