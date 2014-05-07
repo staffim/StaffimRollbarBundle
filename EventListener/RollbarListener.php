@@ -65,6 +65,7 @@ class RollbarListener
 
         $this->rollbarNotifier->person_fn = array($this, 'getUserData');
         register_shutdown_function(array($this, 'flush'));
+        $this->previousErrorHandler = set_error_handler(array($this, 'handleError'));
     }
 
     /**
@@ -88,14 +89,13 @@ class RollbarListener
     }
 
     /**
-     * Register error handler.
+     * Set request.
      *
      * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $this->request = $event->getRequest();
-        $this->previousErrorHandler = set_error_handler(array($this, 'handleError'));
     }
 
     /**
