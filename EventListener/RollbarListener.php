@@ -47,6 +47,8 @@ class RollbarListener
 
     private $scrubParameters;
 
+    private $notifyHttpException;
+
     /**
      * Constructor.
      *
@@ -56,12 +58,14 @@ class RollbarListener
      * @param array $scrubExceptions
      * @param array $scrubParameters
      */
-    public function __construct(\RollbarNotifier $rollbarNotifier, SecurityContextInterface $securityContext, $errorLevel = null, array $scrubExceptions = array(), array $scrubParameters = array()) {
+    public function __construct(\RollbarNotifier $rollbarNotifier, SecurityContextInterface $securityContext, $errorLevel = null, array $scrubExceptions = array(), array $scrubParameters = array(), $notifyHttpException = false)
+    {
         $this->rollbarNotifier = $rollbarNotifier;
         $this->securityContext = $securityContext;
         $this->setErrorLevel($errorLevel);
         $this->scrubExceptions = $scrubExceptions;
         $this->scrubParameters = $scrubParameters;
+        $this->notifyHttpException = $notifyHttpException;
 
         $this->rollbarNotifier->person_fn = array($this, 'getUserData');
         register_shutdown_function(array($this, 'flush'));
@@ -105,7 +109,7 @@ class RollbarListener
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if ($event->getException() instanceof HttpException) {
+        if (!$this->notifyHttpException && $event->getException() instanceof HttpException) {
             return;
         }
 

@@ -17,6 +17,7 @@
             <argument>%staffim_rollbar.rollbar.error_level%</argument>
             <argument>%staffim_rollbar.scrub_exceptions%</argument>
             <argument>%staffim_rollbar.scrub_parameters%</argument>
+            <argument>%staffim_rollbar.notify_http_exception%</argument>
             <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" priority="-100" />
             <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" priority="-200" />
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
