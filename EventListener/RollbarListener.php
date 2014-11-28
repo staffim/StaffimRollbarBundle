@@ -1,12 +1,14 @@
 <?php
 namespace Staffim\RollbarBundle\EventListener;
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use ErrorException;
+use Staffim\RollbarBundle\ReportDecisionManager;
+use Staffim\RollbarBundle\Voter\ReportVoterInterface;
+use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use Symfony\Component\Debug\Exception\FlattenException;
 
 /**
  * @author Vyacheslav Salakhutdinov <megazoll@gmail.com>
@@ -39,6 +41,11 @@ class RollbarListener
     private $request;
 
     /**
+     * @var \Staffim\RollbarBundle\ReportVoterInterface
+     */
+    private $reportVoter;
+
+    /**
      * @var callable
      */
     private $previousErrorHandler;
@@ -47,7 +54,6 @@ class RollbarListener
 
     private $scrubParameters;
 
-    private $notifyHttpException;
 
     /**
      * Constructor.
@@ -58,14 +64,20 @@ class RollbarListener
      * @param array $scrubExceptions
      * @param array $scrubParameters
      */
-    public function __construct(\RollbarNotifier $rollbarNotifier, SecurityContextInterface $securityContext, $errorLevel = null, array $scrubExceptions = array(), array $scrubParameters = array(), $notifyHttpException = false)
-    {
+    public function __construct(
+        \RollbarNotifier $rollbarNotifier,
+        SecurityContextInterface $securityContext,
+        ReportDecisionManager $reportDecisionManager,
+        $errorLevel = null,
+        array $scrubExceptions = array(),
+        array $scrubParameters = array()
+    ) {
         $this->rollbarNotifier = $rollbarNotifier;
         $this->securityContext = $securityContext;
+        $this->reportDecisionManager = $reportDecisionManager;
         $this->setErrorLevel($errorLevel);
         $this->scrubExceptions = $scrubExceptions;
         $this->scrubParameters = $scrubParameters;
-        $this->notifyHttpException = $notifyHttpException;
 
         $this->rollbarNotifier->person_fn = array($this, 'getUserData');
         register_shutdown_function(array($this, 'flush'));
@@ -109,11 +121,11 @@ class RollbarListener
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if (!$this->notifyHttpException && $event->getException() instanceof HttpException) {
+        $exception = $event->getException();
+
+        if (false === $this->reportDecisionManager->decide($exception)) {
             return;
         }
-
-        $exception = $event->getException();
 
         if (in_array(get_class($exception), $this->scrubExceptions)) {
             /** @var FlattenException $exception */
@@ -166,7 +178,10 @@ class RollbarListener
      */
     public function handleError($level, $message, $file, $line, $context)
     {
-        if (error_reporting() & $level && $this->errorLevel & $level) {
+        if (error_reporting() & $level &&
+            $this->errorLevel & $level &&
+            true === $this->reportDecisionManager->decide(new ErrorException($message, 0, $level, $file, $line))
+        ) {
             if ($this->request) {
                 $_SERVER['HTTP_REQUEST_CONTENT'] = $this->request->getContent();
             }
@@ -218,7 +233,7 @@ class RollbarListener
     {
         $error = error_get_last();
         if (!is_null($error)) {
-            switch($error['type']) {
+            switch ($error['type']) {
                 case E_ERROR:
                     $this->rollbarNotifier->report_php_error($error['type'], $error['message'], $error['file'], $error['line']);
                     break;

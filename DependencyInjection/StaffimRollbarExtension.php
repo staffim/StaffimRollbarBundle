@@ -32,5 +32,13 @@ class StaffimRollbarExtension extends Extension
             $container->setParameter('staffim_rollbar.scrub_parameters', $config['scrub']['parameters']);
             $container->setParameter('staffim_rollbar.notify_http_exception', $config['notify_http_exception']);
         }
+
+        if ($config['notify_http_exception']) {
+            $container->removeDefinition('staffim_rollbar.http_exception_voter');
+        }
+
+        if (!$container->hasDefinition('request_stack')) {
+            $container->removeDefinition('staffim_rollbar.same_referer_voter');
+        }
     }
 }
