@@ -5,6 +5,10 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="staffim_rollbar.rollbar_listener.class">Staffim\RollbarBundle\EventListener\RollbarListener</parameter>
+        <parameter key="staffim_rollbar.default_report_voter.class">Staffim\RollbarBundle\Voter\DefaultReportVoter</parameter>
+        <parameter key="staffim_rollbar.report_decision_manager.class">Staffim\RollbarBundle\ReportDecisionManager</parameter>
+        <parameter key="staffim_rollbar.http_exception_voter.class">Staffim\RollbarBundle\Voter\HttpExceptionVoter</parameter>
+        <parameter key="staffim_rollbar.same_referer_voter.class">Staffim\RollbarBundle\Voter\SameRefererVoter</parameter>
         <parameter key="staffim_rollbar.rollbar.class">RollbarNotifier</parameter>
         <parameter key="staffim_rollbar.rollbar.access_token"></parameter>
         <parameter key="staffim_rollbar.rollbar.error_level">-1</parameter>
@@ -14,6 +18,7 @@
         <service id="staffim_rollbar.rollbar_listener" class="%staffim_rollbar.rollbar_listener.class%">
             <argument type="service" id="staffim_rollbar.rollbar"/>
             <argument type="service" id="security.context"/>
+            <argument type="service" id="staffim_rollbar.report_decision_manager"/>
             <argument>%staffim_rollbar.rollbar.error_level%</argument>
             <argument>%staffim_rollbar.scrub_exceptions%</argument>
             <argument>%staffim_rollbar.scrub_parameters%</argument>
@@ -22,8 +27,26 @@
             <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" priority="-200" />
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
         </service>
+
         <service id="staffim_rollbar.rollbar" class="%staffim_rollbar.rollbar.class%">
             <argument>%staffim_rollbar.rollbar.arguments%</argument>
+        </service>
+
+        <service id="staffim_rollbar.default_report_voter" class="%staffim_rollbar.default_report_voter.class%">
+            <argument>%staffim_rollbar.notify_http_exception%</argument>
+        </service>
+
+        <service id="staffim_rollbar.report_decision_manager" class="%staffim_rollbar.report_decision_manager.class%">
+            <argument />
+        </service>
+
+        <service id="staffim_rollbar.http_exception_voter" class="%staffim_rollbar.http_exception_voter.class%">
+            <tag name="staffim_rollbar.report_voter" />
+        </service>
+
+        <service id="staffim_rollbar.same_referer_voter" class="%staffim_rollbar.same_referer_voter.class%">
+            <argument type="service" id="request_stack" />
+            <tag name="staffim_rollbar.report_voter" />
         </service>
     </services>
 </container>
