@@ -2,8 +2,10 @@
 namespace Staffim\RollbarBundle\EventListener;
 
 use ErrorException;
+use Exception;
 use Staffim\RollbarBundle\ReportDecisionManager;
 use Staffim\RollbarBundle\Voter\ReportVoterInterface;
+use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -115,7 +117,7 @@ class RollbarListener
     }
 
     /**
-     * Log exception.
+     * Log kernel exception.
      *
      * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $event
      */
@@ -123,6 +125,46 @@ class RollbarListener
     {
         $exception = $event->getException();
 
+        return $this->handleException($exception);
+    }
+
+    /**
+     * Wrap exception with additional info.
+     *
+     * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $event
+     */
+    public function onKernelResponse(FilterResponseEvent $event)
+    {
+        if ($this->exception) {
+            $debugToken = $event->getResponse()->headers->get('X-Debug-Token');
+            $_SERVER['HTTP_DEBUG_TOKEN'] = $debugToken;
+            $_SERVER['HTTP_REQUEST_CONTENT'] = $event->getRequest()->getContent();
+            $this->rollbarNotifier->report_exception($this->exception);
+            unset($_SERVER['HTTP_DEBUG_TOKEN']);
+            unset($_SERVER['HTTP_REQUEST_CONTENT']);
+            $this->exception = null;
+        }
+    }
+
+    /**
+     * Log console exception.
+     *
+     * @param \Symfony\Component\Console\Event\ConsoleExceptionEvent $event
+     */
+    public function onConsoleException(ConsoleExceptionEvent $event)
+    {
+        $exception = $event->getException();
+
+        return $this->handleException($exception);
+    }
+
+    /**
+     * Handle exception with voters and scrub if needed.
+     *
+     * @param \Exception $exception
+     */
+    protected function handleException(Exception $exception)
+    {
         if (false === $this->reportDecisionManager->decide($exception)) {
             return;
         }
@@ -146,24 +188,6 @@ class RollbarListener
         }
 
         $this->exception = $exception;
-    }
-
-    /**
-     * Wrap exception with additional info.
-     *
-     * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $event
-     */
-    public function onKernelResponse(FilterResponseEvent $event)
-    {
-        if ($this->exception) {
-            $debugToken = $event->getResponse()->headers->get('X-Debug-Token');
-            $_SERVER['HTTP_DEBUG_TOKEN'] = $debugToken;
-            $_SERVER['HTTP_REQUEST_CONTENT'] = $event->getRequest()->getContent();
-            $this->rollbarNotifier->report_exception($this->exception);
-            unset($_SERVER['HTTP_DEBUG_TOKEN']);
-            unset($_SERVER['HTTP_REQUEST_CONTENT']);
-            $this->exception = null;
-        }
     }
 
     /**
