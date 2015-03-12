@@ -14,6 +14,10 @@ class RegisterDecisionVoterPass implements CompilerPassInterface
             return;
         }
 
+        if (!$container->hasDefinition('request_stack')) {
+            $container->removeDefinition('staffim_rollbar.same_referer_voter');
+        }
+
         $voters = array();
         foreach ($container->findTaggedServiceIds('staffim_rollbar.report_voter') as $id => $tags) {
             foreach ($tags as $tag) {
@@ -25,9 +29,5 @@ class RegisterDecisionVoterPass implements CompilerPassInterface
             ->getDefinition('staffim_rollbar.report_decision_manager')
             ->replaceArgument(0, $voters)
         ;
-
-        if (!$container->hasDefinition('request_stack')) {
-            $container->removeDefinition('staffim_rollbar.same_referer_voter');
-        }
     }
 }
