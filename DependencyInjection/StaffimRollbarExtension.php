@@ -36,9 +36,5 @@ class StaffimRollbarExtension extends Extension
         if ($config['notify_http_exception']) {
             $container->removeDefinition('staffim_rollbar.http_exception_voter');
         }
-
-        if (!$container->hasDefinition('request_stack')) {
-            $container->removeDefinition('staffim_rollbar.same_referer_voter');
-        }
     }
 }
