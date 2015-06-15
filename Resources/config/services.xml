@@ -5,6 +5,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="staffim_rollbar.rollbar_listener.class">Staffim\RollbarBundle\EventListener\RollbarListener</parameter>
+        <parameter key="staffim_rollbar.rollbar_reporter.class">Staffim\RollbarBundle\RollbarReporter</parameter>
         <parameter key="staffim_rollbar.default_report_voter.class">Staffim\RollbarBundle\Voter\DefaultReportVoter</parameter>
         <parameter key="staffim_rollbar.report_decision_manager.class">Staffim\RollbarBundle\ReportDecisionManager</parameter>
         <parameter key="staffim_rollbar.http_exception_voter.class">Staffim\RollbarBundle\Voter\HttpExceptionVoter</parameter>
@@ -16,6 +17,11 @@
 
     <services>
         <service id="staffim_rollbar.rollbar_listener" class="%staffim_rollbar.rollbar_listener.class%">
+            <argument type="service" id="staffim_rollbar.rollbar_reporter"/>
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+         <service id="staffim_rollbar.rollbar_reporter" class="%staffim_rollbar.rollbar_reporter.class%">
             <argument type="service" id="staffim_rollbar.rollbar"/>
             <argument type="service" id="security.context"/>
             <argument type="service" id="staffim_rollbar.report_decision_manager"/>
@@ -23,10 +29,6 @@
             <argument>%staffim_rollbar.scrub_exceptions%</argument>
             <argument>%staffim_rollbar.scrub_parameters%</argument>
             <argument>%staffim_rollbar.notify_http_exception%</argument>
-            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" priority="-100" />
-            <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" priority="-200" />
-            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
-            <tag name="kernel.event_listener" event="console.exception" method="onConsoleException" />
         </service>
 
         <service id="staffim_rollbar.rollbar" class="%staffim_rollbar.rollbar.class%">
