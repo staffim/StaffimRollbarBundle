@@ -12,7 +12,6 @@ class RollbarReporter
     protected $rollbarNotifier;
     protected $securityContext;
     protected $reportDecisionManager;
-    protected $exceptionStack;
     protected $reportVoter;
     protected $errorLevel;
 
@@ -29,7 +28,6 @@ class RollbarReporter
         $this->reportDecisionManager = $reportDecisionManager;
         $this->scrubExceptions = $scrubExceptions;
         $this->scrubParameters = $scrubParameters;
-        $this->exceptionStack = array();
         $this->errorLevel = $errorLevel;
 
         $this->rollbarNotifier->person_fn = array($this, 'getUserData');
@@ -52,7 +50,7 @@ class RollbarReporter
             $exception = $this->scrubException($exception);
         }
 
-        $this->exceptionStack[] = $exception;
+        $this->rollbarNotifier->report_exception($exception);
     }
 
     /**
