@@ -126,7 +126,7 @@ class RollbarReporter
      * @param string $context
      * @return bool
      */
-    private function reportError($level, $message, $file, $line, $context)
+    public function reportError($level, $message, $file, $line, $context)
     {
         if (error_reporting() & $level &&
             $this->errorLevel & $level &&

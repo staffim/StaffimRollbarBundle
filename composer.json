@@ -7,7 +7,11 @@
     "authors": [{"name": "Vyacheslav Salakhutdinov", "email": "megazoll@gmail.com"}],
     "require": {
         "ext-curl": "*",
-        "rollbar/rollbar": "@dev"
+        "rollbar/rollbar": "@dev",
+        "symfony/security-core": "~2.3"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~2.2"
     },
     "autoload": {
         "psr-0": {"Staffim\\RollbarBundle\\": ""}
