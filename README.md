@@ -1,5 +1,7 @@
 # RollbarBundle
 
+[![Build Status](https://travis-ci.org/staffim/StaffimRollbarBundle.svg?branch=master)](https://travis-ci.org/staffim/StaffimRollbarBundle)
+
 ## About
 
 Intergrates [Rollbar](http://rollbar.com/) with your Symfony2 application.
