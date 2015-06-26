@@ -2,8 +2,6 @@
 
 namespace Staffim\RollbarBundle;
 
-use Exception;
-
 class ReportDecisionManager
 {
     private $voters;

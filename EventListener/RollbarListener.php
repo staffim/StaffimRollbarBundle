@@ -2,9 +2,11 @@
 namespace Staffim\RollbarBundle\EventListener;
 
 use Exception;
+use Staffim\RollbarBundle\RollbarReporter;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -13,11 +15,28 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class RollbarListener implements EventSubscriberInterface
 {
+    /**
+     * @var \Staffim\RollbarBundle\RollbarReporter
+     */
     private $exceptionReporter;
 
-    public function __construct($exceptionReporter)
+    /**
+     * @var \Symfony\Component\HttpFoundation\RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var callable
+     */
+    private $previousErrorHandler;
+
+    public function __construct(RollbarReporter $exceptionReporter, RequestStack $requestStack)
     {
         $this->exceptionReporter = $exceptionReporter;
+        $this->requestStack = $requestStack;
+
+        register_shutdown_function(array($this->exceptionReporter, 'flush'));
+        $this->previousErrorHandler = set_error_handler(array($this, 'handleError'));
     }
 
     public static function getSubscribedEvents()
@@ -30,6 +49,17 @@ class RollbarListener implements EventSubscriberInterface
         );
     }
 
+    public function handleError($level, $message, $file, $line, $context)
+    {
+        $this->exceptionReporter->reportError($level, $message, $file, $line, $this->requestStack->getCurrentRequest());
+
+        if ($this->previousErrorHandler) {
+            return call_user_func($this->previousErrorHandler, $level, $message, $file, $line, $context);
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Report kernel exception.
      *
@@ -37,9 +67,7 @@ class RollbarListener implements EventSubscriberInterface
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        $exception = $event->getException();
-
-        return $this->exceptionReporter->report($exception);
+        return $this->reportException($event->getException());
     }
 
     /**
@@ -49,9 +77,16 @@ class RollbarListener implements EventSubscriberInterface
      */
     public function onConsoleException(ConsoleExceptionEvent $event)
     {
-        $exception = $event->getException();
+        return $this->reportException($event->getException());
+    }
 
-        return $this->exceptionReporter->report($exception);
+    /**
+     * @param \Exception $exception
+     * @return string
+     */
+    private function reportException(Exception $exception)
+    {
+        return $this->exceptionReporter->report($exception, $this->requestStack->getCurrentRequest());
     }
 
     /**

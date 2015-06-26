@@ -6,9 +6,10 @@
     "type": "bundle",
     "authors": [{"name": "Vyacheslav Salakhutdinov", "email": "megazoll@gmail.com"}],
     "require": {
-        "ext-curl": "*",
-        "rollbar/rollbar": "@dev",
-        "symfony/security-core": "~2.3"
+        "rollbar/rollbar": "~0.14",
+        "symfony/event-dispatcher": "~2.4",
+        "symfony/http-kernel": "~2.4",
+        "symfony/security-core": "~2.4"
     },
     "require-dev": {
         "phpspec/phpspec": "~2.2"

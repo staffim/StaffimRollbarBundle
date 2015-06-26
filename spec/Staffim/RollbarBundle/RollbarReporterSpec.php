@@ -3,6 +3,7 @@
 namespace spec\Staffim\RollbarBundle;
 
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 use RollbarNotifier;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Staffim\RollbarBundle\ReportDecisionManager;
@@ -40,5 +41,14 @@ class RollbarReporterSpec extends ObjectBehavior
         $reportDecisionManager->decide($e)->willReturn(false);
         $rollbarNotifier->report_exception($e)->shouldNotBeCalled();
         $this->report($e);
+    }
+
+    function it_should_report_error($reportDecisionManager, $rollbarNotifier)
+    {
+        $reportDecisionManager->decide(Argument::type('ErrorException'))->willReturn(true);
+        $file = __FILE__;
+        $line = __LINE__;
+        $rollbarNotifier->report_php_error(E_USER_NOTICE, 'Error', $file, $line)->shouldBeCalled();
+        $this->reportError(E_USER_NOTICE, 'Error', $file, $line);
     }
 }

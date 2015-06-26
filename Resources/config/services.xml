@@ -18,6 +18,7 @@
     <services>
         <service id="staffim_rollbar.rollbar_listener" class="%staffim_rollbar.rollbar_listener.class%">
             <argument type="service" id="staffim_rollbar.rollbar_reporter"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber" />
         </service>
 
