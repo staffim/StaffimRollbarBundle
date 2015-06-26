@@ -1,6 +1,6 @@
 # RollbarBundle
 
-[![Build Status](https://travis-ci.org/staffim/StaffimRollbarBundle.svg?branch=master)](https://travis-ci.org/staffim/StaffimRollbarBundle)
+[![Build Status](https://travis-ci.org/staffim/StaffimRollbarBundle.svg?branch=master)](https://travis-ci.org/staffim/StaffimRollbarBundle) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/ff4df077-5079-4b33-8758-189b251fb3d5/mini.png)](https://insight.sensiolabs.com/projects/ff4df077-5079-4b33-8758-189b251fb3d5)
 
 ## About
 
