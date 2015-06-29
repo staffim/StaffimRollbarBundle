@@ -4,9 +4,7 @@
 
 ## About
 
-Intergrates [Rollbar](http://rollbar.com/) with your Symfony2 application.
-
-The bundle is inspired from [ratchetio-bundle](https://github.com/ecoleman/ratchetio-bundle)
+Integrates [Rollbar](http://rollbar.com/) with your Symfony2 application.
 
 ## Installation
 
