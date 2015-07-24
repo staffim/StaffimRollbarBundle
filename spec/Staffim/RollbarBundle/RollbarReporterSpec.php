@@ -32,15 +32,23 @@ class RollbarReporterSpec extends ObjectBehavior
     function it_should_report_exception_when_decision_true(\Exception $e, $reportDecisionManager, $rollbarNotifier)
     {
         $reportDecisionManager->decide($e)->willReturn(true);
-        $rollbarNotifier->report_exception($e)->shouldBeCalled();
+        $rollbarNotifier->report_exception($e, null)->shouldBeCalled();
         $this->report($e);
     }
 
     function it_should_not_report_exception_when_decision_false(\Exception $e, $reportDecisionManager, $rollbarNotifier)
     {
         $reportDecisionManager->decide($e)->willReturn(false);
-        $rollbarNotifier->report_exception($e)->shouldNotBeCalled();
+        $rollbarNotifier->report_exception($e, null)->shouldNotBeCalled();
         $this->report($e);
+    }
+
+    function it_should_report_exception_with_extra_data(\Exception $e, $reportDecisionManager, $rollbarNotifier)
+    {
+        $reportDecisionManager->decide($e)->willReturn(true);
+        $extra = array('foo' => 'bar');
+        $rollbarNotifier->report_exception($e, $extra)->shouldBeCalled();
+        $this->report($e, null, $extra);
     }
 
     function it_should_report_error($reportDecisionManager, $rollbarNotifier)

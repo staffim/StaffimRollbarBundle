@@ -74,9 +74,10 @@ class RollbarReporter
      *
      * @param \Exception $exception
      * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param array $extraData
      * @return string UUID of rollbar item
      */
-    public function report(Exception $exception, Request $request = null)
+    public function report(Exception $exception, Request $request = null, $extraData = null)
     {
         if (false === $this->reportDecisionManager->decide($exception)) {
             return;
@@ -87,7 +88,7 @@ class RollbarReporter
         }
 
         $this->prepareGlobalServer($request);
-        $result = $this->rollbarNotifier->report_exception($exception);
+        $result = $this->rollbarNotifier->report_exception($exception, $extraData);
         $this->cleanGlobalServer();
 
         return $result;
