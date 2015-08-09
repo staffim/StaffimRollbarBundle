@@ -26,6 +26,7 @@ class StaffimRollbarExtension extends Extension
             $phpLoader->load('parameters.php');
             $xmlLoader->load('services.xml');
 
+            $container->setParameter('staffim_rollbar.rollbar.environment', $config['environment']);
             $container->setParameter('staffim_rollbar.rollbar.access_token', $config['access_token']);
             $container->setParameter('staffim_rollbar.rollbar.error_level', $config['error_level']);
             $container->setParameter('staffim_rollbar.scrub_exceptions', $config['scrub']['exceptions']);
