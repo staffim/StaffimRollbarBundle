@@ -19,6 +19,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('environment')
+                    ->defaultValue('%kernel.environment%')
+                ->end()
                 ->scalarNode('access_token')
                 ->end()
                 ->scalarNode('error_level')
