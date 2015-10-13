@@ -169,7 +169,7 @@ class RollbarReporter
      *
      * @return null|array
      */
-    private function getUserData()
+    public function getUserData()
     {
         if ($this->securityContext->getToken() && $this->securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $userData = array();
