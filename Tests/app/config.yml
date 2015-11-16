@@ -1,0 +1,16 @@
+framework:
+    secret: "secret"
+    test: ~
+    router:
+        resource: "%kernel.root_dir%/routing.yml"
+
+security:
+    providers:
+        in_memory:
+            memory: ~
+    firewalls:
+        default:
+            anonymous: ~
+
+staffim_rollbar:
+    access_token: example_token

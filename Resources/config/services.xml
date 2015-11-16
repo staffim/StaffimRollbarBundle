@@ -6,7 +6,6 @@
     <parameters>
         <parameter key="staffim_rollbar.rollbar_listener.class">Staffim\RollbarBundle\EventListener\RollbarListener</parameter>
         <parameter key="staffim_rollbar.rollbar_reporter.class">Staffim\RollbarBundle\RollbarReporter</parameter>
-        <parameter key="staffim_rollbar.default_report_voter.class">Staffim\RollbarBundle\Voter\DefaultReportVoter</parameter>
         <parameter key="staffim_rollbar.report_decision_manager.class">Staffim\RollbarBundle\ReportDecisionManager</parameter>
         <parameter key="staffim_rollbar.http_exception_voter.class">Staffim\RollbarBundle\Voter\HttpExceptionVoter</parameter>
         <parameter key="staffim_rollbar.same_referer_voter.class">Staffim\RollbarBundle\Voter\SameRefererVoter</parameter>
@@ -34,10 +33,6 @@
 
         <service id="staffim_rollbar.rollbar" class="%staffim_rollbar.rollbar.class%">
             <argument>%staffim_rollbar.rollbar.arguments%</argument>
-        </service>
-
-        <service id="staffim_rollbar.default_report_voter" class="%staffim_rollbar.default_report_voter.class%">
-            <argument>%staffim_rollbar.notify_http_exception%</argument>
         </service>
 
         <service id="staffim_rollbar.report_decision_manager" class="%staffim_rollbar.report_decision_manager.class%">
