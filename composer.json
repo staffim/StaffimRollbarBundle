@@ -9,7 +9,8 @@
         "rollbar/rollbar": "~0.15",
         "symfony/event-dispatcher": "~2.6|~3.0",
         "symfony/http-kernel": "~2.6|~3.0",
-        "symfony/security-core": "~2.6|~3.0"
+        "symfony/security-core": "~2.6|~3.0",
+        "symfony/debug": "~2.6|~3.0"
     },
     "require-dev": {
         "phpspec/phpspec": "~2.3",
