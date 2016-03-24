@@ -7,7 +7,7 @@ use ErrorException;
 use RollbarNotifier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\FlattenException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class RollbarReporter
 {
@@ -17,9 +17,9 @@ class RollbarReporter
     private $rollbarNotifier;
 
     /**
-     * @var \Symfony\Component\Security\Core\SecurityContextInterface
+     * @var \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface
      */
-    private $securityContext;
+    private $tokenStorage;
 
     /**
      * @var \Staffim\RollbarBundle\ReportDecisionManager
@@ -45,7 +45,7 @@ class RollbarReporter
      * Constructor.
      *
      * @param \RollbarNotifier $rollbarNotifier
-     * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
+     * @param \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface $tokenStorage
      * @param \Staffim\RollbarBundle\ReportDecisionManager $reportDecisionManager
      * @param type $errorLevel
      * @param array $scrubExceptions
@@ -53,14 +53,14 @@ class RollbarReporter
      */
     public function __construct(
         RollbarNotifier $rollbarNotifier,
-        SecurityContextInterface $securityContext,
+        TokenStorageInterface $tokenStorage,
         ReportDecisionManager $reportDecisionManager,
         $errorLevel = -1,
         array $scrubExceptions = array(),
         array $scrubParameters = array()
     ) {
         $this->rollbarNotifier = $rollbarNotifier;
-        $this->securityContext = $securityContext;
+        $this->tokenStorage = $tokenStorage;
         $this->reportDecisionManager = $reportDecisionManager;
         $this->scrubExceptions = $scrubExceptions;
         $this->scrubParameters = $scrubParameters;
@@ -171,10 +171,10 @@ class RollbarReporter
      */
     public function getUserData()
     {
-        if ($this->securityContext->getToken() && $this->securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        if ($token = $this->tokenStorage->getToken()) {
             $userData = array();
-            $user = $this->securityContext->getToken()->getUser();
-            if (!$user) {
+            $user = $token->getUser();
+            if (!$user || !is_object($user)) {
                 return null;
             }
             if (method_exists($user, 'getId')) {

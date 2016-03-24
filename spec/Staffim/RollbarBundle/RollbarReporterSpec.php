@@ -5,23 +5,23 @@ namespace spec\Staffim\RollbarBundle;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use RollbarNotifier;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Staffim\RollbarBundle\ReportDecisionManager;
 
 class RollbarReporterSpec extends ObjectBehavior
 {
     /**
      * @param \RollbarNotifier $rollbarNotifier
-     * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
+     * @param \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface $tokenStorage
      * @param \Staffim\RollbarBundle\ReportDecisionManager $reportDecisionManager
      */
     function let(
         RollbarNotifier $rollbarNotifier,
-        SecurityContextInterface $securityContext,
+        TokenStorageInterface $tokenStorage,
         ReportDecisionManager $reportDecisionManager
     ) {
         $rollbarNotifier->flush()->willReturn(null);
-        $this->beConstructedWith($rollbarNotifier, $securityContext, $reportDecisionManager);
+        $this->beConstructedWith($rollbarNotifier, $tokenStorage, $reportDecisionManager);
     }
 
     function it_is_initializable()

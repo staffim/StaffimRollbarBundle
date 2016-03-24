@@ -23,7 +23,7 @@
 
          <service id="staffim_rollbar.rollbar_reporter" class="%staffim_rollbar.rollbar_reporter.class%">
             <argument type="service" id="staffim_rollbar.rollbar"/>
-            <argument type="service" id="security.context"/>
+            <argument type="service" id="security.token_storage"/>
             <argument type="service" id="staffim_rollbar.report_decision_manager"/>
             <argument>%staffim_rollbar.rollbar.error_level%</argument>
             <argument>%staffim_rollbar.scrub_exceptions%</argument>

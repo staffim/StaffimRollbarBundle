@@ -3,11 +3,6 @@
 namespace Staffim\DTOBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Staffim\DTOBundle\Serializer\SerializationContext;
-
-use JMS\Serializer\Annotation as Serializer;
-use Hateoas\Configuration\Annotation as Hateoas;
-use Staffim\DTOBundle\DTO\Model\DTOInterface;
 
 class ContainerTest extends KernelTestCase
 {
