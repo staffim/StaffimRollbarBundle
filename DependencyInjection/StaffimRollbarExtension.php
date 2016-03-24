@@ -22,7 +22,7 @@ class StaffimRollbarExtension extends Extension
         $phpLoader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $xmlLoader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
-        if (isset($config['access_token'])) {
+        if (isset($config['access_token']) && $config['enabled']) {
             $phpLoader->load('parameters.php');
             $xmlLoader->load('services.xml');
 
