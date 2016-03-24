@@ -45,6 +45,9 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->booleanNode('enabled')
+                    ->defaultValue(true)
+                ->end()
             ->end()
         ;
 
