@@ -4,5 +4,6 @@ $container->setParameter('staffim_rollbar.rollbar.arguments', array(
     'host'         => php_uname('n'),
     'access_token' => '%staffim_rollbar.rollbar.access_token%',
     'max_errno'    => -1,
-    'environment' => '%staffim_rollbar.rollbar.environment%',
+    'environment'  => '%staffim_rollbar.rollbar.environment%',
+    'code_version' => '%staffim_rollbar.rollbar.code_version%',
 ));
