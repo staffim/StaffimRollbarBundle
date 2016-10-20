@@ -15,7 +15,7 @@
     </parameters>
 
     <services>
-        <service id="staffim_rollbar.rollbar_listener" class="%staffim_rollbar.rollbar_listener.class%">
+        <service id="staffim_rollbar.rollbar_listener" class="%staffim_rollbar.rollbar_listener.class%" lazy="true">
             <argument type="service" id="staffim_rollbar.rollbar_reporter"/>
             <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber" />
