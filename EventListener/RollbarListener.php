@@ -1,4 +1,5 @@
 <?php
+
 namespace Staffim\RollbarBundle\EventListener;
 
 use Exception;
@@ -82,6 +83,7 @@ class RollbarListener implements EventSubscriberInterface
 
     /**
      * @param \Exception $exception
+     *
      * @return string
      */
     private function reportException(Exception $exception)
@@ -90,7 +92,7 @@ class RollbarListener implements EventSubscriberInterface
     }
 
     /**
-     * Flush exception stack to Rollbar
+     * Flush exception stack to Rollbar.
      */
     public function onKernelTerminate()
     {
@@ -98,7 +100,7 @@ class RollbarListener implements EventSubscriberInterface
     }
 
     /**
-     * Flush exception stack to Rollbar
+     * Flush exception stack to Rollbar.
      */
     public function onConsoleTerminate()
     {

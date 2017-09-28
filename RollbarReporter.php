@@ -44,12 +44,12 @@ class RollbarReporter
     /**
      * Constructor.
      *
-     * @param \RollbarNotifier $rollbarNotifier
+     * @param \RollbarNotifier                                                                    $rollbarNotifier
      * @param \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface $tokenStorage
-     * @param \Staffim\RollbarBundle\ReportDecisionManager $reportDecisionManager
-     * @param type $errorLevel
-     * @param array $scrubExceptions
-     * @param array $scrubParameters
+     * @param \Staffim\RollbarBundle\ReportDecisionManager                                        $reportDecisionManager
+     * @param type                                                                                $errorLevel
+     * @param array                                                                               $scrubExceptions
+     * @param array                                                                               $scrubParameters
      */
     public function __construct(
         RollbarNotifier $rollbarNotifier,
@@ -72,9 +72,10 @@ class RollbarReporter
     /**
      * Report an exception to the rollbar.
      *
-     * @param \Exception $exception
+     * @param \Exception                                $exception
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param array $extraData
+     * @param array                                     $extraData
+     *
      * @return string UUID of rollbar item
      */
     public function report(Exception $exception, Request $request = null, $extraData = null)
@@ -97,11 +98,12 @@ class RollbarReporter
     /**
      * Report an error to the rollbar.
      *
-     * @param int $level
-     * @param string $message
-     * @param string $file
-     * @param int $line
+     * @param int                                       $level
+     * @param string                                    $message
+     * @param string                                    $file
+     * @param int                                       $line
      * @param \Symfony\Component\HttpFoundation\Request $request
+     *
      * @return bool
      */
     public function reportError($level, $message, $file, $line, Request $request = null)
@@ -152,7 +154,7 @@ class RollbarReporter
         foreach ($trace as $key => $item) {
             array_walk_recursive($item['args'], function (&$value, $key, $params) {
                 if (is_string($value) && $key = array_search($value, $params)) {
-                    $value = '%' . $key . '%';
+                    $value = '%'.$key.'%';
                 }
             }, $this->scrubParameters);
 

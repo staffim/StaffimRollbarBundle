@@ -1,4 +1,5 @@
 <?php
+
 namespace Staffim\RollbarBundle;
 
 use Staffim\RollbarBundle\DependencyInjection\CompilerPass\RegisterDecisionVoterPass;
@@ -11,7 +12,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class StaffimRollbarBundle extends Bundle
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function build(ContainerBuilder $container)
     {

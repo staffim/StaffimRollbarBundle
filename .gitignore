@@ -3,3 +3,4 @@ composer.lock
 vendor
 Tests/app/cache
 Tests/app/logs
+.php_cs.cache

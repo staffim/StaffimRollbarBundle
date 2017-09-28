@@ -1,4 +1,5 @@
 <?php
+
 namespace Staffim\RollbarBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -12,7 +13,7 @@ use Symfony\Component\DependencyInjection\Loader;
 class StaffimRollbarExtension extends Extension
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
